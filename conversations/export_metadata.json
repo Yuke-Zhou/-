@@ -1,0 +1,423 @@
+{
+  "thread_id": "01a1c570-d5f5-71c2-a0d5-3dacc7e98228",
+  "exported_at_utc": "2026-11-12T03:41:47.694819+00:00",
+  "read_to_oldest_page": true,
+  "message_count": 68,
+  "counts": {
+    "user": 18,
+    "assistant": 50
+  },
+  "source_visible_json_sha256": "2694ea9754e8c02858c3235acf5a2e7ed3d5bf349792571d2cf4346f948e8701",
+  "markdown_sha256": "c351e5770e8ac4cf42327fc32dbc8f66d70240bf0414b9cd6c2e3808461988b8",
+  "last_message_id": "msg_0ffe7d6939e86e60016af532cbfe5887d09fef235d462c61a1",
+  "messages": [
+    {
+      "id": "01a1c572-062e-7722-b6ac-6d27534c5f7b",
+      "role": "user",
+      "characters": 664,
+      "sha256": "18806b895f4858fefe016005c620d2e24340ed0c294c964bed332b5ced719195"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af30f459a3887d087bf57750620719a",
+      "role": "assistant",
+      "characters": 61,
+      "sha256": "7489ed039d610fc30242aa02e8612079691d897cba65e48c25d6ff0b78ffc42b"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af30f630e5c87d08ed85e930b14da18",
+      "role": "assistant",
+      "characters": 76,
+      "sha256": "f4ffe1616797ab9d5538ed712673751ebd764ba9f073f56c2da61a246e2a5d86"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af30fed31b087d0bc267fce41b45236",
+      "role": "assistant",
+      "characters": 3441,
+      "sha256": "eb26dfa16cd57e6bf8be5ea0abf12141cb433690bb51ad4df46439341a3c6799"
+    },
+    {
+      "id": "01a1c582-3e08-7722-8dce-8ea45b6fa48c",
+      "role": "user",
+      "characters": 157,
+      "sha256": "98d03153b4af66c01d87e5593336f31a205d914466340ff5b67817e1ca4f5842"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3130a82bc87d0963f359ac5e173a3",
+      "role": "assistant",
+      "characters": 53,
+      "sha256": "5302b2cde2b758e35979bb36859e0e364a2ac34000a4a2a7b2852d684695472e"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af313205d7c87d0ab57cf3e11e537f5",
+      "role": "assistant",
+      "characters": 94,
+      "sha256": "173b45d13782abd37ebbde98a85949daed6b1e132f0ddee449005ddeed91cc48"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af313a4e6a487d0a5bf0cc76a65c642",
+      "role": "assistant",
+      "characters": 77,
+      "sha256": "0aa7227f89c6d162184541c600a861ce2b79e73e20eae3c1b66e6163f9f3827b"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af314b349f487d0bdd582825fbc52d3",
+      "role": "assistant",
+      "characters": 130,
+      "sha256": "0472083791f43b6aed12de7fee6f8b1bd4554bdff20f0f742c431b178ee74ca6"
+    },
+    {
+      "id": "call_bdeadc22a89c4203950326d53a30c68c",
+      "role": "assistant",
+      "characters": 136,
+      "sha256": "a2baaa3be5db36d584dfa4ea2ccb96d3919d09cf7e27c1d91329289d80729088"
+    },
+    {
+      "id": "01a1c58a-5319-7262-bc52-ea376f9d150b",
+      "role": "user",
+      "characters": 336,
+      "sha256": "55e0101ccf7d971c0fcf82b0ddc0c252b03f18d5fc159c674ddc37e24331e8f8"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af315533c1087d09ffe81662d516724",
+      "role": "assistant",
+      "characters": 87,
+      "sha256": "7408c87c5f6a91e1033f32ee4f0bd4591df7a3bc5eb8a430bd5889f4e40bc5de"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af31665ff2487d0b0a504d20281d661",
+      "role": "assistant",
+      "characters": 3772,
+      "sha256": "c771194d1475d1edd6b8d7bd957587d8a2e7ef0b908fe8268a534933d81a6f78"
+    },
+    {
+      "id": "01a1c595-31a5-7942-a693-1cd0a0a0e90c",
+      "role": "user",
+      "characters": 77,
+      "sha256": "cb21d8366dc62efed3cba01b021e8a86728da219a1fcbed301ab899683141549"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af317f287c887d0b41ebac6b6632e64",
+      "role": "assistant",
+      "characters": 73,
+      "sha256": "fd8833b18d2301ae1b816167d2c2be4f429fed54916cb67d0ee83aeb6e167910"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af31859f18887d094fc455e0644d217",
+      "role": "assistant",
+      "characters": 2449,
+      "sha256": "9c2374505545e2f72704edd90c827fd5ee18850de896fb7ed6e37f3b474bfbaa"
+    },
+    {
+      "id": "01a1c598-9fbb-76c2-9c35-398bfc323f5b",
+      "role": "user",
+      "characters": 97,
+      "sha256": "0621a78f2d00e664df09aed1b0691b1028b97f5fec9f2278a37a6c7256e19420"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3191d7dac87d08669dd7823c40882",
+      "role": "assistant",
+      "characters": 76,
+      "sha256": "eb5cfc43819ed5fdfa1bbf435c150dbb90a8f2d1ce41c227c9e727f6ecea5a6f"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af319f34a0c87d0a8af11c86e609089",
+      "role": "assistant",
+      "characters": 132,
+      "sha256": "1c2eec03ec8cdda975289aabc05d8f0c0a88e11b96090fecf2150e80029fdfe0"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af31c3d314487d0b866cbe4077e62b3",
+      "role": "assistant",
+      "characters": 132,
+      "sha256": "336d0c389f49eabf200ab736e0040a81878156a3dbdcf476d7af439d58c40158"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af31cb7dde087d08526e3961c8c22b8",
+      "role": "assistant",
+      "characters": 5716,
+      "sha256": "128a2c49a16ae025c53c0c46e0f5307cd8cc397e87225dd98ba43b2794ab95ea"
+    },
+    {
+      "id": "01a1c5b1-a417-7061-95d8-27c70e1441e3",
+      "role": "user",
+      "characters": 100,
+      "sha256": "93bd9897cd839a9c84eeb94900aca82696196c420a0f9f78fc2ab581956b2766"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af31f4288e087d0b5c8145f5f3d7438",
+      "role": "assistant",
+      "characters": 94,
+      "sha256": "cf35fc5e5b29054a35880bc8c55193ae351dac959d99e6af8ff79a9717087917"
+    },
+    {
+      "id": "call_24d817324fbe415889be6d04573f2a6a",
+      "role": "assistant",
+      "characters": 109,
+      "sha256": "f9cfbdfe27f9f12694145b9a15b544f520f5406ca74dd3fef8e870114d38fba8"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af320124b0887d0b8951a15b26b681f",
+      "role": "assistant",
+      "characters": 2590,
+      "sha256": "55e1d2caa42127b15c4d7ede622c41a2d9dcc59503dc93d0d525e4aeafacbeeb"
+    },
+    {
+      "id": "01a1c880-cbc3-7653-8a39-224fa0776c1e",
+      "role": "user",
+      "characters": 13,
+      "sha256": "9d50deee09edbb5a0e710d0c7f355387ca739ac3972dcd79dd474f3628763eb5"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3d7b8a7bc87d09c6a72a24ad49c14",
+      "role": "assistant",
+      "characters": 390,
+      "sha256": "c49df9d0ca8ec5795abd04e68eb847252d8fd29858895ffef7cf1f4000f2ec8e"
+    },
+    {
+      "id": "01a1c887-1aef-7311-8538-753a17e8d514",
+      "role": "user",
+      "characters": 132,
+      "sha256": "6a01abcf243306d25ac7919dea1f46fed7353a113e7904c4b23b5e80dddc3613"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3d90b055487d0af69c987ffc7caf0",
+      "role": "assistant",
+      "characters": 72,
+      "sha256": "e0a1ecb4b67319d555109f1f136201dd38565e75126651d0f4d510b829dd7362"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3d93f8b1487d0bd251754c82b663f",
+      "role": "assistant",
+      "characters": 1812,
+      "sha256": "563a9b9ea5d063c3cc2d39e46a6e58a2fe7e43527febbd99c8a02cc19588b6dd"
+    },
+    {
+      "id": "01a1c88d-660d-7e61-b83c-7a856fabf224",
+      "role": "user",
+      "characters": 8,
+      "sha256": "eb03884f5e3c404ca7ab2bc1e8861526cacccc9655bc9d0b656d16da2d87ea5c"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3dad92a4c87d0894eed070a230328",
+      "role": "assistant",
+      "characters": 113,
+      "sha256": "2f27696d061a4d684e46c9cece9716a37e06bf229450dbda5f8a8268851ecc95"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3db4e499887d097fc62b9d272354b",
+      "role": "assistant",
+      "characters": 2003,
+      "sha256": "16e1f1e624827d3b7eef9861c70a62ae8be53176607f4916dde096290b4c79ee"
+    },
+    {
+      "id": "01a1c892-7c9f-7f62-82ce-835b85f3e7ae",
+      "role": "user",
+      "characters": 117,
+      "sha256": "1efbd24207d3fd584f41f8b51e754eaa3a24a33cea0f0c829c14597f87318225"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3dbcfdda487d09ed9494cae8f4b82",
+      "role": "assistant",
+      "characters": 100,
+      "sha256": "6b15789532ec697a6df8ead6182f532e8f2ae10daaa30b4dac757d5b4f0c2614"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3dcc6bd8487d0878f9b6735976647",
+      "role": "assistant",
+      "characters": 115,
+      "sha256": "38c54cca08ed8b4f5b70fcc751915ac6e64136c225a24ac6a96ed48a92432264"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3dd19b22487d0a3d187a4f6d5c9b3",
+      "role": "assistant",
+      "characters": 102,
+      "sha256": "60e367913e33383fb02bad548f2245a41e21f9926b2d16af1415cbb721fa0515"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3dd5b0cc887d0a3b9a6690ef8c7b2",
+      "role": "assistant",
+      "characters": 3587,
+      "sha256": "0232cd9f9dd8effcf252e7e52c233cd1bce67b78e73ce6e98beec25bbced0d73"
+    },
+    {
+      "id": "01a1c89b-c106-75f1-8b48-7018c501ebd5",
+      "role": "user",
+      "characters": 70,
+      "sha256": "5ec4e1c748ebfef1b388a85699afdfdbdd2efbce530307a29059549e1fc14e96"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3de2b82b887d08a27895b2762bdd1",
+      "role": "assistant",
+      "characters": 64,
+      "sha256": "5e888f6861937602e6790e6d6016ad3cd3239e20c90ae6a2276feb0621b4aca9"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3df80b50087d0a1f3034a0ea2dd65",
+      "role": "assistant",
+      "characters": 119,
+      "sha256": "3fd5e9ba6191c59e4d2446433e630ff963eee4173bbd6a3e1e85f008bb916b33"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3dff2561c87d0a4a71744a1a98eef",
+      "role": "assistant",
+      "characters": 3657,
+      "sha256": "9b4cc833133ca8adb4fa12722683dd6c4e5800c945a51d6df72639a3e55aae72"
+    },
+    {
+      "id": "01a1c8ac-354a-7cb2-99c7-43271b180d8e",
+      "role": "user",
+      "characters": 5,
+      "sha256": "af188be1ca5a09285fdb2baed10032e2f00517f113c2d80a312f0d1b84f3ba30"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3e2611d1c87d095d7c7c67c03d7d4",
+      "role": "assistant",
+      "characters": 70,
+      "sha256": "b7a5128a671741084f10856fde163c2b2eaec4c954b694597691492a233e620f"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3e2ebed4487d080d773805d116d33",
+      "role": "assistant",
+      "characters": 960,
+      "sha256": "1d1e0a9bf178f28708377708929a5b620d7288c5e88651d79f4a9f0c49918492"
+    },
+    {
+      "id": "01a1c8b1-a40d-7780-b6bc-0d039eecbcfa",
+      "role": "user",
+      "characters": 124,
+      "sha256": "f7706c95b16c97e4cd11c9c58e0395f2e2a8d006d241aefbef6338a4ee36a7fb"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3e40eb5e087d086e05fe2f3af2192",
+      "role": "assistant",
+      "characters": 887,
+      "sha256": "e47fda07c90d5e9121ae3f4e8bb250aae049ca848d84ca4771679deab047affb"
+    },
+    {
+      "id": "01a1c8b4-8dd6-7172-a3d6-d16204579fa8",
+      "role": "user",
+      "characters": 12,
+      "sha256": "4ec9fcfb23f6800270c95af8be994c84bb5d5558e7df07564a4fd8533ac4f934"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3e482a9d087d080099beba94b83d9",
+      "role": "assistant",
+      "characters": 61,
+      "sha256": "6681926ab01e5f459bdfbfab0dca3ec45a1895d5c6600e5b91ed600d8dbcc58c"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3e58cc5cc87d0a8dd07cdcce8bcdc",
+      "role": "assistant",
+      "characters": 95,
+      "sha256": "56eb3584f13d29b24708edc051b540453b6040dcdc11f9a22636b2c47670957e"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3e609ef8087d080baa6ac531f2bb8",
+      "role": "assistant",
+      "characters": 1438,
+      "sha256": "3a2c207c1205ddef319202e8730c8561796d85226a189234ea48c7aa134d6994"
+    },
+    {
+      "id": "01a1c8f1-7452-7f93-87ae-162e1e3e72be",
+      "role": "user",
+      "characters": 10,
+      "sha256": "af33611f865a32c47f9e81c84bdfeb5c917c567cf596bea981fc16eb337de2ec"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3f41b915887d0a893014673aac10d",
+      "role": "assistant",
+      "characters": 79,
+      "sha256": "5ed0046662f9b4a8755e308e5f7f88475a5b439ed18a1575299631a686e995b7"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3f54ffd7087d0bbc384fbf9169bd1",
+      "role": "assistant",
+      "characters": 98,
+      "sha256": "a927b099c54ec23b27e6f6dc54ab6d81d62aacd53f5d6635cd8d074ff10157c5"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3f72f973087d0b182921af035a2f6",
+      "role": "assistant",
+      "characters": 82,
+      "sha256": "d020b7c9d3da8a0eaa84c1f7cb772f99d0fef994d2ecfcacd3827706bb91df4e"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3f7b2bad087d0bf0e5b4c1e931b27",
+      "role": "assistant",
+      "characters": 129,
+      "sha256": "b95ce4c6d9b237eaa66f884aaebf4a6503dde0c9aaaca32a822f3b4dcfb412d1"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af3f7d98f0887d0bcd41db940a3fc7b",
+      "role": "assistant",
+      "characters": 574,
+      "sha256": "56e9fd33160bcb4f16f1938307efe01aff37c83faa3544b904f6d3fc0f85c669"
+    },
+    {
+      "id": "01a1cdb5-b8e0-7641-b762-0b9aade28f86",
+      "role": "user",
+      "characters": 28,
+      "sha256": "dc5e73d0c04b9dbf94621ece19b67f67bae4eb601e50cc649e506475f6733121"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af52ce1e41087d09b071dbd9ef42e04",
+      "role": "assistant",
+      "characters": 82,
+      "sha256": "bd0a592762ab602d8d738b1c9f4dfd0c1a29bbe565f269b71f8b5f2cb369e64b"
+    },
+    {
+      "id": "call_a56f94cede66408b81971ce875517b0f",
+      "role": "assistant",
+      "characters": 81,
+      "sha256": "d7e5667d52c090e2fe52509bf7d60f564ef873282e72c9536c5da73a455c95c4"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af52d1aeac087d0af77f7ca44115e09",
+      "role": "assistant",
+      "characters": 100,
+      "sha256": "049a4108f4317a12ea57b242b014bc5cf5c797312a3cff82bbbd7438269ed1fc"
+    },
+    {
+      "id": "01a1cdb8-8d1f-7180-a9e1-9c2f07fc63c0",
+      "role": "user",
+      "characters": 296,
+      "sha256": "e936c8fc0baaf9d1819dc7d67dbaaf3afc30a7805fedfa361d7b80fd58026f7e"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af52d49c6d887d08c44b5391ac1001f",
+      "role": "assistant",
+      "characters": 89,
+      "sha256": "4d798be5fc88afb6f2139b5da640306459301cecaf295a4d77a6b88edfdfaac0"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af52e56dc7087d0b6ea81878319b1a5",
+      "role": "assistant",
+      "characters": 133,
+      "sha256": "9e50775a7cea1b0b2b4c6430340d49181a2a3f426f58d57ec8b51c494fe51517"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af52fe8b22487d0a61092286368a887",
+      "role": "assistant",
+      "characters": 95,
+      "sha256": "c17ae34e064c5319efbb4b808b1b2709a23209eb55ed7eddbc5b6681ae0a1f03"
+    },
+    {
+      "id": "01a1cdcb-c229-77c3-9d7e-ac952a7ea631",
+      "role": "user",
+      "characters": 96,
+      "sha256": "62af8af07afc939b95b50e248981cf4b0d5411d7e3b823ff3e61b0f4c398d94a"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af532372b8c87d08c6a579f6d465d23",
+      "role": "assistant",
+      "characters": 55,
+      "sha256": "4d846def56116d66fee02cf36bfaa42e6527e16d8e56006af375f95d7eab31f2"
+    },
+    {
+      "id": "msg_0ffe7d6939e86e60016af532cbfe5887d09fef235d462c61a1",
+      "role": "assistant",
+      "characters": 97,
+      "sha256": "117ee002eca7d3fee6fb44b7a6867f345a2ba0332791c59bf970b803ca851b86"
+    }
+  ]
+}

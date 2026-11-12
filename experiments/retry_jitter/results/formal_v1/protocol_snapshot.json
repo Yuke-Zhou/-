@@ -1,0 +1,65 @@
+{
+  "config_source_sha256": "1c36d319319a46d1386e10405a8d302d763d86ca6710988b687678f7917bc779",
+  "created_at_utc": "2026-11-11T05:03:45.533786+00:00",
+  "effective_config": {
+    "attempt_limit": 20,
+    "base_mean_wait_seconds": 0.25,
+    "bootstrap_repetitions": 10000,
+    "bootstrap_seed": 20261111,
+    "deadline_seconds": 12.0,
+    "failure_response_seconds": 0.02,
+    "loads": {
+      "high": 100,
+      "low": 5
+    },
+    "max_mean_wait_seconds": 2.0,
+    "mechanism_strategy": {
+      "amplitude": 0.5,
+      "name": "medium_shared",
+      "shared": true
+    },
+    "peak_window_seconds": 0.1,
+    "practical_improvement": 0.05,
+    "recovery_max_seconds": 4.0,
+    "recovery_min_seconds": 2.0,
+    "schema_version": 1,
+    "seed_count": 200,
+    "seed_start": 10000,
+    "service_seconds": 0.05,
+    "strategies": [
+      {
+        "amplitude": 0.0,
+        "name": "no_jitter",
+        "shared": false
+      },
+      {
+        "amplitude": 0.5,
+        "name": "medium_independent",
+        "shared": false
+      },
+      {
+        "amplitude": 1.0,
+        "name": "large_independent",
+        "shared": false
+      }
+    ],
+    "waiting_slots": 5
+  },
+  "platform": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "requested_overrides": {
+    "bootstrap": null,
+    "seeds": null
+  },
+  "source_sha256": {
+    "EXPERIMENT_PLAN.md": "f17005843ad39b5748d09819ec3fd965b588fc0863326710ee81a073d34fcacb",
+    "IMPLEMENTATION_NOTES.md": "8e32b0c66e1b0caed67500b3bc3dbbfd5360eed8a389c37aa86ec8d0bf60a160",
+    "analysis.py": "96836806a6d88515e9d7026272b8f7c7e2a7b2bf692c1dba23733a58c982cee8",
+    "config.json": "1c36d319319a46d1386e10405a8d302d763d86ca6710988b687678f7917bc779",
+    "plot_results.py": "0fb22094fc9f74e389a67ad0fe37161e5ed6872d2a71a1e8a9db5b7d232d94e7",
+    "run_experiment.py": "05ec130603f31b466eb2cde09cefb01804d55cd15a55f299ebcda643daa5152c",
+    "simulator.py": "5d0cc842e6dbd780cbff85313f7e77516dcb4a998a16d6db9d0cfdd762cdb1ac",
+    "verify_run.py": "2d9b2b57e6cf13d52f43fcde4005f025fe7d6089e1cd53cf117f82a913da4e8c"
+  },
+  "time_unit": "integer nanoseconds; round-to-nearest at random delay generation"
+}

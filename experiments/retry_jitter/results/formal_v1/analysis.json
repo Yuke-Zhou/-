@@ -1,0 +1,134 @@
+{
+  "bootstrap_repetitions": 10000,
+  "bootstrap_seed": 20261111,
+  "contrasts": {
+    "H1_high_improvement": {
+      "ci95_high": 0.7598999999999999,
+      "ci95_low": 0.7545000000000001,
+      "directional_verdict": "supported",
+      "mean": 0.7572,
+      "meets_practical_point_threshold": true
+    },
+    "H2_load_interaction": {
+      "ci95_high": 0.7598999999999999,
+      "ci95_low": 0.7545000000000001,
+      "directional_verdict": "supported",
+      "mean": 0.7572
+    },
+    "low_improvement": {
+      "ci95_high": 0.0,
+      "ci95_low": 0.0,
+      "directional_verdict": "nonpositive_in_test",
+      "mean": 0.0
+    },
+    "mechanism_peak": {
+      "ci95_high": 89.115,
+      "ci95_low": 88.71,
+      "directional_verdict": "supported",
+      "mean": 88.915
+    },
+    "mechanism_queue_rejections": {
+      "ci95_high": 316.450125,
+      "ci95_low": 301.499875,
+      "directional_verdict": "supported",
+      "mean": 309.015
+    },
+    "mechanism_unfinished": {
+      "ci95_high": 0.74515,
+      "ci95_low": 0.7336499999999999,
+      "directional_verdict": "supported",
+      "mean": 0.7394
+    }
+  },
+  "groups": [
+    {
+      "load": "high",
+      "mean_peak_retry_count": 10.285,
+      "mean_queue_rejections": 52.82,
+      "mean_total_attempts": 579.05,
+      "mean_unfinished_count": 0.0,
+      "mean_unfinished_rate": 0.0,
+      "strategy": "large_independent",
+      "t95_mean_among_reached_only": 8.44516223474,
+      "t95_reached_trials": 200,
+      "trials": 200
+    },
+    {
+      "load": "high",
+      "mean_peak_retry_count": 11.085,
+      "mean_queue_rejections": 61.995,
+      "mean_total_attempts": 577.11,
+      "mean_unfinished_count": 0.0,
+      "mean_unfinished_rate": 0.0,
+      "strategy": "medium_independent",
+      "t95_mean_among_reached_only": 8.09496247851,
+      "t95_reached_trials": 200,
+      "trials": 200
+    },
+    {
+      "load": "high",
+      "mean_peak_retry_count": 100.0,
+      "mean_queue_rejections": 371.01,
+      "mean_total_attempts": 812.24,
+      "mean_unfinished_count": 73.94,
+      "mean_unfinished_rate": 0.7394,
+      "strategy": "medium_shared",
+      "t95_mean_among_reached_only": null,
+      "t95_reached_trials": 0,
+      "trials": 200
+    },
+    {
+      "load": "high",
+      "mean_peak_retry_count": 100.0,
+      "mean_queue_rejections": 401.6,
+      "mean_total_attempts": 842.88,
+      "mean_unfinished_count": 75.72,
+      "mean_unfinished_rate": 0.7572,
+      "strategy": "no_jitter",
+      "t95_mean_among_reached_only": null,
+      "t95_reached_trials": 0,
+      "trials": 200
+    },
+    {
+      "load": "low",
+      "mean_peak_retry_count": 1.475,
+      "mean_queue_rejections": 0.0,
+      "mean_total_attempts": 26.345,
+      "mean_unfinished_count": 0.0,
+      "mean_unfinished_rate": 0.0,
+      "strategy": "large_independent",
+      "t95_mean_among_reached_only": 5.579416307845,
+      "t95_reached_trials": 200,
+      "trials": 200
+    },
+    {
+      "load": "low",
+      "mean_peak_retry_count": 1.615,
+      "mean_queue_rejections": 0.0,
+      "mean_total_attempts": 25.765,
+      "mean_unfinished_count": 0.0,
+      "mean_unfinished_rate": 0.0,
+      "strategy": "medium_independent",
+      "t95_mean_among_reached_only": 4.99318796868,
+      "t95_reached_trials": 200,
+      "trials": 200
+    },
+    {
+      "load": "low",
+      "mean_peak_retry_count": 5.0,
+      "mean_queue_rejections": 0.0,
+      "mean_total_attempts": 25.6,
+      "mean_unfinished_count": 0.0,
+      "mean_unfinished_rate": 0.0,
+      "strategy": "no_jitter",
+      "t95_mean_among_reached_only": 4.3224,
+      "t95_reached_trials": 200,
+      "trials": 200
+    }
+  ],
+  "interval_method": "paired percentile bootstrap over independent seeds",
+  "practical_improvement": 0.05,
+  "scope": "Synthetic finite-queue model; this is not evidence of Internet service performance.",
+  "seed_count": 200,
+  "trial_count": 1400
+}

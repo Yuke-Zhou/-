@@ -1,0 +1,36 @@
+{
+  "author": "周宇科",
+  "student_id": "22634015",
+  "report_date": "2026-11-12",
+  "github_url": "https://github.com/Yuke-Zhou/-",
+  "dialogue_url": "https://github.com/Yuke-Zhou/-/blob/main/conversations/full_dialogue.md",
+  "formal_run": "experiments/retry_jitter/results/formal_v1",
+  "inputs_sha256": {
+    "analysis.json": "9215affb92b67ac89cbbacfd58323d928c323cbb79ff4ab8c84540f0bffce0d2",
+    "manifest.json": "79c34307117afac4bf90a2930d2f83e34d42542f9363a469197f05bb1c889446",
+    "effective_config.json": "3c8fd0cbee36e28abf27f6c8235e80f49ec6dcb8c13df5b513cf65dd7f9e78d3",
+    "trials.csv": "0be57e03e45cd1022b9b184a6bda835a457b29d5c2d69c9394d46f85571d7019"
+  },
+  "analytical_check": {
+    "no_jitter_success_counts": {
+      "25": 176,
+      "19": 24
+    },
+    "interpretation": "post-hoc model consistency explanation"
+  },
+  "raw_counts": {
+    "trials": 1400,
+    "clients": 83000,
+    "attempts": 577798
+  },
+  "references_access_date": "2026-11-12",
+  "limitations": [
+    "synthetic finite queue",
+    "zero observed failures is not zero population risk",
+    "no algorithm novelty established"
+  ],
+  "outputs_sha256": {
+    "课程研究报告_周宇科_22634015.pdf": "d0bb4d9a9be411b58ec4b7fdeb359fea9869cc96d335b52badc1fd67a0c9af1c",
+    "课程研究报告_周宇科_22634015.md": "8e01a7de5c99526885ef7465e5df1c3df7c0809c296be6d92ffb156aaf374eac"
+  }
+}

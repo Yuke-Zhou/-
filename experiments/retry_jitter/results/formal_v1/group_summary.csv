@@ -1,0 +1,8 @@
+load,strategy,trials,mean_unfinished_rate,mean_unfinished_count,mean_total_attempts,mean_peak_retry_count,mean_queue_rejections,t95_reached_trials,t95_mean_among_reached_only
+high,large_independent,200,0.0,0.0,579.05,10.285,52.82,200,8.44516223474
+high,medium_independent,200,0.0,0.0,577.11,11.085,61.995,200,8.09496247851
+high,medium_shared,200,0.7394,73.94,812.24,100.0,371.01,0,
+high,no_jitter,200,0.7572,75.72,842.88,100.0,401.6,0,
+low,large_independent,200,0.0,0.0,26.345,1.475,0.0,200,5.579416307845
+low,medium_independent,200,0.0,0.0,25.765,1.615,0.0,200,4.99318796868
+low,no_jitter,200,0.0,0.0,25.6,5.0,0.0,200,4.3224

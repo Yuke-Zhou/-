@@ -1,0 +1,22 @@
+{
+  "example_seed": 10000,
+  "figure_sha256": {
+    "01_unfinished_rate.png": "3ce24876ac85000b178bbafe8883cc24647454d04d3341a443d7ebbe9dca3129",
+    "01_unfinished_rate.svg": "d69e7e8d78798736ef89b1017b8c86095d0abaa662e91b2798f76189281f054b",
+    "02_paired_effects.png": "5ac84d6bb94163857e90312825549ed135954c8cde197048cb9af6b081ac3f83",
+    "02_paired_effects.svg": "395f355f4ba7452fb935427ab149ecf856a270f790b50a6f28a1f72988b67cd7",
+    "03_mechanism.png": "a44553fc587ba39132981eb50003cf075f084b6f0f80a6553bdf7e5a4980c8c1",
+    "03_mechanism.svg": "3215961a46dfffe5c39c884ecb6036bc601c560eb407ea533b2ebd483f552904",
+    "04_example_timeline.png": "277f336c066750d002a01b1753374991dd6c4100bf00b924b79512916e99e6e4",
+    "04_example_timeline.svg": "2450cf737ae38bb8d89a0ed05e4cabc837f9155d571b3217aee113efd56b2944"
+  },
+  "input_sha256": {
+    "analysis.json": "9215affb92b67ac89cbbacfd58323d928c323cbb79ff4ab8c84540f0bffce0d2",
+    "attempts.csv.gz": "cdb759369e497d7495e977dcad4dc091d1633aa0339fe4422db88e615ea1e8ad",
+    "clients.csv.gz": "98c614079f17bf6b5fe954fb325f255048bb14524ff3125ca847265c6e324d86",
+    "effective_config.json": "3c8fd0cbee36e28abf27f6c8235e80f49ec6dcb8c13df5b513cf65dd7f9e78d3",
+    "trials.csv": "0be57e03e45cd1022b9b184a6bda835a457b29d5c2d69c9394d46f85571d7019"
+  },
+  "matplotlib_version": "3.11.2",
+  "notes": "Mean bars are descriptive; paired confidence intervals are in figure 02 and analysis.json."
+}

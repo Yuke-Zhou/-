@@ -1,0 +1,44 @@
+{
+  "attempt_limit": 20,
+  "base_mean_wait_seconds": 0.25,
+  "bootstrap_repetitions": 10000,
+  "bootstrap_seed": 20261111,
+  "deadline_seconds": 12.0,
+  "failure_response_seconds": 0.02,
+  "loads": {
+    "high": 100,
+    "low": 5
+  },
+  "max_mean_wait_seconds": 2.0,
+  "mechanism_strategy": {
+    "amplitude": 0.5,
+    "name": "medium_shared",
+    "shared": true
+  },
+  "peak_window_seconds": 0.1,
+  "practical_improvement": 0.05,
+  "recovery_max_seconds": 4.0,
+  "recovery_min_seconds": 2.0,
+  "schema_version": 1,
+  "seed_count": 200,
+  "seed_start": 10000,
+  "service_seconds": 0.05,
+  "strategies": [
+    {
+      "amplitude": 0.0,
+      "name": "no_jitter",
+      "shared": false
+    },
+    {
+      "amplitude": 0.5,
+      "name": "medium_independent",
+      "shared": false
+    },
+    {
+      "amplitude": 1.0,
+      "name": "large_independent",
+      "shared": false
+    }
+  ],
+  "waiting_slots": 5
+}
