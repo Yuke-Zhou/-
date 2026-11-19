@@ -1,9 +1,23 @@
 {
   "author": "周宇科",
   "student_id": "22634015",
-  "report_date": "2026-11-12",
+  "report_date": "2026-11-19",
   "github_url": "https://github.com/Yuke-Zhou/-",
   "dialogue_url": "https://github.com/Yuke-Zhou/-/blob/main/conversations/full_dialogue.md",
+  "extension_dialogue_url": "https://github.com/Yuke-Zhou/-/blob/main/conversations/partial_sharing_dialogue.md",
+  "format": {
+    "paper": "A4",
+    "body_font": "SimSun",
+    "body_font_size_pt": 10.5,
+    "body_leading_pt": 15.75,
+    "first_line_indent_characters": 2,
+    "first_line_indent_pt": 21.0,
+    "body_space_after_pt": 6,
+    "table_captions": "above",
+    "figure_captions": "below",
+    "references": "hanging indent",
+    "markdown_indent": "two full-width spaces"
+  },
   "formal_run": "experiments/retry_jitter/results/formal_v1",
   "inputs_sha256": {
     "analysis.json": "9215affb92b67ac89cbbacfd58323d928c323cbb79ff4ab8c84540f0bffce0d2",
@@ -23,6 +37,19 @@
     "clients": 83000,
     "attempts": 577798
   },
+  "extension_run": "experiments/retry_jitter/results/partial_sharing_v1",
+  "extension_inputs_sha256": {
+    "analysis.json": "0b79ed7913e16b96b0c301ad6bbb473ef9896732a53d1537bab5d48a06ef4b6e",
+    "manifest.json": "8aeaba2f54ab38306ded7bdf901fdc4345d76b0b50e2034c47b1cb247763cd55",
+    "effective_config.json": "1c8b62f72e81875aa0fd5db676757af7dd0b4a6ebeb2873d1dfbd09ab6b2ba08",
+    "trials.csv": "e259fe501f356a057d7d5b5bd1d11a7baabf69c95df7b24280c0f6cb3bc4473e",
+    "figures/sharing_thresholds.png": "da4f330b3ea0cafd819579d215cff6004aa60d8e324012b6ba87cccdd174ca77",
+    "figures/sharing_mechanisms.png": "58c9c11f1a03fc928f0fb1674d7b658ddad285d1e002b0bb1a9452591f8e14bc"
+  },
+  "extension_counts": {
+    "trials": 8800,
+    "seeds": 200
+  },
   "references_access_date": "2026-11-12",
   "limitations": [
     "synthetic finite queue",
@@ -30,7 +57,7 @@
     "no algorithm novelty established"
   ],
   "outputs_sha256": {
-    "课程研究报告_周宇科_22634015.pdf": "d0bb4d9a9be411b58ec4b7fdeb359fea9869cc96d335b52badc1fd67a0c9af1c",
-    "课程研究报告_周宇科_22634015.md": "8e01a7de5c99526885ef7465e5df1c3df7c0809c296be6d92ffb156aaf374eac"
+    "课程研究报告_周宇科_22634015.md": "4705264908f381b8a50df61c0ceb1a6136b765c487f8e755a44cd08d6efa8caf",
+    "课程研究报告_周宇科_22634015.pdf": "688774ada64f337e320a48b7e0f3ad5e7c6f2a9390f78f4151f61acd378bb4e8"
   }
 }

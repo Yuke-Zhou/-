@@ -1,5 +1,14 @@
 **随机重试抖动实验工程**
 
+**部分共享扩展（2026-11-19）** 对100台客户端按5个百分点扫描共享比例，比较同步与错峰启动，并比较同为50台共享时的1组×50人与5组×10人。正式运行共8800轮。[实验协议](EXPERIMENT_PLAN_PARTIAL_SHARING.md) · [各档统计](results/partial_sharing_v1/by_profile.csv) · [共享比例曲线](results/partial_sharing_v1/figures/sharing_thresholds.png) · [分组和错峰对照](results/partial_sharing_v1/figures/sharing_mechanisms.png)
+
+```powershell
+python run_partial_sharing.py --output results/my_shared_run
+python plot_partial_sharing.py --run results/my_shared_run
+```
+
+模拟脚本使用标准库，绘图使用Matplotlib。结果目录中的 `trials.csv` 保存逐轮指标，`scenarios.jsonl` 保存各个种子的恢复时刻、分组顺序和错峰时刻，`example_attempts.jsonl.gz` 保存种子20000的逐请求日志。基础实验如下。
+
 对应《海洋数据挖掘技术》的指数退避、随机抖动与重试风暴知识点。目标是检验：每轮期望等待相同，中等独立抖动能否降低高负载未按期完成率，以及收益是否主要来自请求去同步。
 
 本工程提供模拟器、冻结协议、原始日志、配对统计、机制消融、验证检查和图表。它不是课程实验报告，也没有把已有随机退避称为新算法。课程要求的完整AI对话还需真实导出；本工程不会伪造聊天记录。

@@ -1,0 +1,19 @@
+{
+  "python_version": "3.7.12",
+  "inputs_sha256": {
+    "run_partial_sharing.py": "62ae529549352f2d654a613031a0eac63f17efe81f0f65abfd0a6aaef984f3ec",
+    "analysis.py": "96836806a6d88515e9d7026272b8f7c7e2a7b2bf692c1dba23733a58c982cee8",
+    "simulator.py": "5d0cc842e6dbd780cbff85313f7e77516dcb4a998a16d6db9d0cfdd762cdb1ac",
+    "config.json": "1c36d319319a46d1386e10405a8d302d763d86ca6710988b687678f7917bc779",
+    "EXPERIMENT_PLAN_PARTIAL_SHARING.md": "f31d4bc158448cfd7b6b00bd5ae869c683a3a27dd22aabecd77ce44693221b6f"
+  },
+  "outputs_sha256": {
+    "analysis.json": "0b79ed7913e16b96b0c301ad6bbb473ef9896732a53d1537bab5d48a06ef4b6e",
+    "by_profile.csv": "09e987be1d9d46f4c3a259e6325cfc3006e75fe59c65b2cbbf0bbecba45c03a7",
+    "effective_config.json": "1c8b62f72e81875aa0fd5db676757af7dd0b4a6ebeb2873d1dfbd09ab6b2ba08",
+    "example_attempts.jsonl.gz": "1f4bbea0248ebf8e99b11c8e3e23a63b56d54ca84446a0a39669985788fb2c3d",
+    "protocol_snapshot.md": "f31d4bc158448cfd7b6b00bd5ae869c683a3a27dd22aabecd77ce44693221b6f",
+    "scenarios.jsonl": "85166b73af8b7cfeed44a7ff615da583fe61360f5f893b7b3a3a9ef7507d7825",
+    "trials.csv": "e259fe501f356a057d7d5b5bd1d11a7baabf69c95df7b24280c0f6cb3bc4473e"
+  }
+}

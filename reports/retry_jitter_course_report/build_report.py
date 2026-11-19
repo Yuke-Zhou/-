@@ -1,10 +1,12 @@
-"""Build the course report from the frozen formal_v1 results, without rerunning trials."""
+"""Build the course report from the frozen baseline and partial-sharing results."""
 from pathlib import Path
 from collections import Counter
+from decimal import Decimal, ROUND_HALF_UP
 import csv
 import hashlib
 import html
 import json
+import re
 import shutil
 
 from reportlab.lib import colors
@@ -15,15 +17,81 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
                                Image, PageBreak, KeepTogether)
+from reportlab.platypus import paragraph as paragraph_module
+
+
+NO_LINE_START = set('，。！？；：、）》」』】〕〉］｝’”,.!?;:)]}%％‰')
+NO_LINE_END = set('（《「『【〔〈［｛‘“([{')
+# The library's CJK defaults omit several Chinese punctuation characters.
+paragraph_module.ALL_CANNOT_START += ''.join(sorted(NO_LINE_START))
+
+
+def chinese_lines(text, widths, font_name, font_size):
+    """Wrap plain Chinese prose without separating punctuation or Latin words."""
+    if not isinstance(widths, (list, tuple)):
+        widths = [widths]
+    units, prefix = [], ''
+    for token in re.findall(r'[A-Za-z0-9_]+(?:[./-][A-Za-z0-9_]+)*| +|.', text):
+        if token in NO_LINE_END:
+            prefix += token
+        elif token in NO_LINE_START and units:
+            units[-1] += prefix + token
+            prefix = ''
+        else:
+            units.append(prefix + token)
+            prefix = ''
+    if prefix:
+        units.append(prefix)
+    lines, row = [], ''
+    for unit in units:
+        available = widths[min(len(lines), len(widths) - 1)]
+        if not row and unit.isspace():
+            continue
+        candidate = row + unit
+        if row and pdfmetrics.stringWidth(candidate, font_name, font_size) > available + 1e-7:
+            line = row.rstrip()
+            lines.append((available - pdfmetrics.stringWidth(line, font_name, font_size), [line]))
+            row = unit.lstrip()
+        else:
+            row = candidate
+        available = widths[min(len(lines), len(widths) - 1)]
+        if pdfmetrics.stringWidth(row, font_name, font_size) > available + 1e-7:
+            raise ValueError('Unbreakable text exceeds report column: ' + row)
+    if row:
+        available = widths[min(len(lines), len(widths) - 1)]
+        lines.append((available - pdfmetrics.stringWidth(row, font_name, font_size), [row]))
+    return lines
+
+
+class ReportParagraph(Paragraph):
+    def breakLinesCJK(self, maxWidths):
+        broken = super().breakLinesCJK(maxWidths)
+        if (broken.kind == 0 and len(self.frags) == 1
+                and hasattr(self.frags[0], 'text') and not getattr(self, '_splitpara', False)):
+            fragment = self.frags[0]
+            broken.lines = chinese_lines(fragment.text, maxWidths, fragment.fontName, fragment.fontSize)
+        return broken
+
+
+Paragraph = ReportParagraph
 
 HERE = Path(__file__).resolve().parent
 WORKSPACE = HERE.parents[1]
 ENGINEERING = WORKSPACE / 'experiments' / 'retry_jitter'
 RUN = ENGINEERING / 'results' / 'formal_v1'
+EXTENSION = ENGINEERING / 'results' / 'partial_sharing_v1'
 ASSETS = HERE / 'assets'
 ASSETS.mkdir(exist_ok=True)
 REPOSITORY_URL = 'https://github.com/Yuke-Zhou/-'
 DIALOGUE_URL = REPOSITORY_URL + '/blob/main/conversations/full_dialogue.md'
+EXTENSION_DIALOGUE_URL = REPOSITORY_URL + '/blob/main/conversations/partial_sharing_dialogue.md'
+EXTENSION_RESULTS_URL = REPOSITORY_URL + '/tree/main/experiments/retry_jitter/results/partial_sharing_v1'
+REPORT_DATE = '2026-11-19'
+BODY_FONT_SIZE = 10.5
+BODY_LEADING = BODY_FONT_SIZE * 1.5
+BODY_FIRST_LINE_INDENT = BODY_FONT_SIZE * 2
+# ReportLab's default frame has six-point padding on both sides.
+CONTENT_WIDTH = 595.276 - 52.6 * 2 - 12
 
 
 def digest(path):
@@ -44,7 +112,20 @@ for name, expected in fig_manifest['input_sha256'].items():
     if digest(RUN / name) != expected:
         raise ValueError('Figure input differs from formal data: ' + name)
 if analysis['trial_count'] != 1400 or analysis['seed_count'] != 200:
-    raise ValueError('This report describes formal_v1 only')
+    raise ValueError('The baseline results must match formal_v1')
+
+extension_manifest = json.loads((EXTENSION / 'manifest.json').read_text(encoding='utf-8'))
+for name, expected in extension_manifest['outputs_sha256'].items():
+    if digest(EXTENSION / name) != expected:
+        raise ValueError('Changed partial-sharing artifact: ' + name)
+for name, expected in extension_manifest['inputs_sha256'].items():
+    if digest(ENGINEERING / name) != expected:
+        raise ValueError('Changed partial-sharing input: ' + name)
+extension = json.loads((EXTENSION / 'analysis.json').read_text(encoding='utf-8'))
+if extension['trial_count'] != 8800 or extension['seed_count'] != 200:
+    raise ValueError('The extension results must match partial_sharing_v1')
+extension_groups = {(r['launch'], r['profile']): r for r in extension['groups']}
+extension_thresholds = extension['thresholds']
 
 g = {(r['load'], r['strategy']): r for r in analysis['groups']}
 contrasts = analysis['contrasts']
@@ -73,6 +154,15 @@ def ci_pp(name):
     return f"[{r['ci95_low']*100:.2f}, {r['ci95_high']*100:.2f}]"
 
 
+def extension_pp(proportion):
+    points = Decimal(format(proportion * 100, '.12g'))
+    return str(points.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP))
+
+
+def extension_ci(lower, upper):
+    return f'[{extension_pp(lower)}, {extension_pp(upper)}]'
+
+
 pages = []
 
 
@@ -95,23 +185,24 @@ def formula(blocks, text):
 
 
 def table(blocks, headers, rows, widths):
-    blocks.append(('table', headers, rows, widths))
     titles = ['均值匹配的策略定义', '服务和客户端的共同配置', '主实验的描述性统计',
-              '预先指定的配对效应及置信区间', '高负载下独立随机与共享随机的机制对照', '研究者和AI的实际分工']
-    number = sum(1 for _, page_blocks in pages for item in page_blocks if item[0] == 'table')
+              '预先指定的配对效应及置信区间', '高负载下独立随机与共享随机的机制对照',
+              '部分共享实验的首次检出档位', '共享人数相同条件下的关键对照', '研究者和AI的实际分工']
+    number = 1 + sum(1 for _, page_blocks in pages for item in page_blocks if item[0] == 'table')
     blocks.append(('caption', f'表{number} {titles[number-1]}'))
+    blocks.append(('table', headers, rows, widths))
 
 
-def figure(blocks, name, caption, width=490):
-    shutil.copy2(RUN / 'figures' / (name + '.png'), ASSETS / (name + '.png'))
+def figure(blocks, name, caption, width=490, run=RUN):
+    shutil.copy2(run / 'figures' / (name + '.png'), ASSETS / (name + '.png'))
     blocks.append(('figure', name + '.png', caption, width))
 
 
 b = page('研究问题与主要发现')
 b.append(('cover', None))
 lead(b, '摘要')
-p(b, f'针对海洋数据查询接口短暂故障后的同步重试问题，本文以客户端在共同截止时间前能否完成任务为首要目标，设计每轮期望等待相同的无抖动、中等独立抖动和大幅独立抖动策略，并以共享随机等待构造机制对照。实验使用离散事件模拟，在低、高两种负载下各进行200个种子的配对试验，合计1400轮、{client_count:,}个客户端任务与{attempt_count:,}次请求。高负载下，无抖动的平均未按期完成率为{pct(high_base["mean_unfinished_rate"])}，中等与大幅独立抖动均为0%；中等相对无抖动改善75.72个百分点，配对95%区间为{ci_pp("H1_high_improvement")}个百分点。共享抖动仍有73.94%的平均未完成率，支持“客户端之间去同步”是本模型中收益的重要机制。低负载全部按期完成，且两种独立抖动在主指标上打平，因而本实验不能确定普遍最优幅度，也不能证明真实服务零超时。')
-p(b, '关键词：指数退避；随机抖动；重试风暴；有限队列；配对实验；截止时间')
+p(b, f'本文以海温查询服务的故障恢复为背景，用离散事件模拟分析重试抖动。基础实验共1400轮，在每轮期望等待相同的条件下，高负载无抖动的平均未完成率为{pct(high_base["mean_unfinished_rate"])}，中等独立抖动为0.00%，完全共享抖动为{pct(high_shared["mean_unfinished_rate"])}。扩展实验共{extension["trial_count"]:,}轮，固定单台客户端的等待分布，比较部分共享、组规模与启动时序。同时启动时，未完成率上升首次在{extension_thresholds["synchronous"]["first_detected_positive_delta"]}%共享档检出，首次有证据超过5个百分点的档位为{extension_thresholds["synchronous"]["first_detected_practical_delta"]}%。首次请求在1秒内错峰后，两档分别推迟至{extension_thresholds["staggered"]["first_detected_positive_delta"]}%和{extension_thresholds["staggered"]["first_detected_practical_delta"]}%。同为50台共享时，一个50人组与五个10人组的未完成率分别为{pct(extension_groups["synchronous","shared_050"]["mean_unfinished_rate"])}和{pct(extension_groups["synchronous","shared_050_split"]["mean_unfinished_rate"])}。结果表明，同步组规模和启动时序会改变本模型中的恢复表现。')
+b.append(('keywords', '关键词：指数退避、随机抖动、同步组、错峰启动、有限队列、配对实验'))
 lead(b, '选题来源')
 p(b, '课程课件《让重复迟到失败都变得无害》第9—10页介绍了指数退避与随机等待：客户端在失败后增加等待，并通过不同的随机等待分散同步请求[1]。本研究将这一小知识点放入一个容量和队列均受限的海温查询接口模型中。接口是只读操作，海温服务仅提供应用背景；实验不使用真实海温观测，也不评估海洋温度本身的变化。')
 p(b, '研究者最初判断，在客户端少、服务容量充足时，确定性等待可能已经足够，并明确把“尽可能减少超时的客户端数量”作为优先目标。本文将其转化为低负载对照与截止时间指标。这里“未按期完成”还包括提前用尽重试次数的任务，不只包含网络请求超时。')
@@ -198,51 +289,92 @@ p(b, '图4使用配置中的首个种子，未按效果挑选“最好看”的�
 p(b, '为检查75.72%的高未完成率是否来自实现错误，可对确定性策略作解析复核。在20毫秒失败响应和预设退避下，请求时刻依次为0、0.27、0.79、1.81、3.83、5.85、7.87、9.89、11.91秒。一次同步到达最多接纳“1个处理中＋5个等待”的6个请求。')
 p(b, f'若服务在3.83秒时已恢复，前四个可用批次各完成6个，11.91秒批次仅首个于11.96秒完成，总计25个成功；若恢复晚于3.83秒，则少一个批次，共19个成功。日志中恰有{fixed_counts[25]}轮成功25个、{fixed_counts[19]}轮成功19个，故平均成功24.28个、未完成75.72个。这是事后的模型一致性解释，不作为额外独立试验。')
 
-b = page('探索贡献 适用边界与协作记录')
+b = page('部分共享实验设计与首次检出档位')
+p(b, '基础实验只比较抖动独立和全体共享两个端点。扩展实验[6]固定100台客户端及中等抖动，每个失败序号的等待范围仍为0.5至1.5倍基准等待。只让指定组内的客户端在同一失败序号使用相同抽样，组间和组外各用独立序列。这样可以单独改变多少台客户端一起等待，以及它们组成几个同步组。')
+p(b, '单组共享比例从0%到100%，按5个百分点取21档。另设50%共享的分组对照，同一批50台客户端划为五个各10台的组。每种共享结构均运行全体同时启动和1秒内错峰启动两种条件。保持单工作器、5个等待位与12秒全局截止，在200个新种子下配对运行，共8800轮。')
+p(b, '各档与同一启动方式的0%共享基线相比。按种子重采样10,000次，用40个档位差的最大绝对偏差构造同时95%区间。区间下界大于0作为检出标准，下界大于5个百分点作为达到本项目实际影响标准的证据。')
+threshold_rows = []
+for mode, label in [('synchronous', '同时启动'), ('staggered', '1秒内错峰')]:
+    thresholds = extension_thresholds[mode]
+    detected = thresholds['first_detected_positive_delta']
+    practical = thresholds['first_detected_practical_delta']
+    picked = [extension_groups[mode, f'shared_{share:03d}'] for share in (detected, practical)]
+    threshold_rows.append([label, f'{detected}%', extension_pp(picked[0]['delta_vs_independent']),
+                           f'{practical}%', extension_pp(picked[1]['delta_vs_independent'])])
+table(b, ['首次请求方式', '首次检出档', '增幅（百分点）', '首次确认超过5点', '增幅（百分点）'],
+      threshold_rows, [110, 75, 95, 115, 95])
+figure(b, 'sharing_thresholds', '图5 共享比例与未完成率增幅。阴影为同时95%区间，虚线为5个百分点。右图为局部放大。', run=EXTENSION)
+p(b, '同时启动时，15%档的区间仍包含0。20%档的增幅区间为[1.68, 4.05]个百分点，25%档为[5.28, 7.65]个百分点。错峰时，90%档的点估计已超过5个百分点，区间仍覆盖该参考值。这些档位的精度受5个百分点采样步长限制。')
+
+b = page('分组和错峰对服务恢复的影响')
+p(b, f'扩展实验复核了基础实验的两个端点。同时启动时，完全独立组的未完成率仍为0.00%，完全共享组为{pct(extension_groups["synchronous","shared_100"]["mean_unfinished_rate"])}，与基础实验的{pct(high_shared["mean_unfinished_rate"])}接近。新增对照进一步检验了共享人数相同条件下，组规模与启动时序的影响。')
+comparison_rows = []
+for mode, profile, label in [
+        ('synchronous', 'shared_000', '完全独立，同时启动'),
+        ('synchronous', 'shared_050', '1组×50人，同时启动'),
+        ('synchronous', 'shared_050_split', '5组×10人，同时启动'),
+        ('staggered', 'shared_050', '1组×50人，错峰启动')]:
+    row = extension_groups[mode, profile]
+    comparison_rows.append([label, pct(row['mean_unfinished_rate']),
+                            f'{row["mean_peak_retry_count"]:.2f}', f'{row["mean_queue_rejections"]:.2f}'])
+table(b, ['实验条件', '12秒未完成率', '100毫秒重试峰值', '队列满拒绝次数'],
+      comparison_rows, [180, 100, 110, 100])
+figure(b, 'sharing_mechanisms', '图6 分组和错峰的恢复表现。三项指标分别对应表7的三列，均为200个种子的均值。', run=EXTENSION)
+group_effect = extension['contrasts']['sync_one_group_minus_five_groups']
+timing_effect = extension['contrasts']['sync_minus_staggered_50_point_effect']
+p(b, f'同时启动时，将同一批50台从一个组拆成五个独立组，未完成率下降{extension_pp(group_effect["mean_delta"])}个百分点，配对95%区间为{extension_ci(group_effect["ci95_lower"], group_effect["ci95_upper"])}。按每种启动方式的独立基线计算，错峰使50%共享的额外未完成率下降{extension_pp(timing_effect["mean_delta"])}个百分点，配对95%区间为{extension_ci(timing_effect["ci95_lower"], timing_effect["ci95_upper"])}。')
+p(b, '同时启动且15%共享时，重试峰值已从10.94次升至20.70次，但未完成率差异仍未检出。表7和图6的对照表明，拆小同步组与错峰都降低了峰值和拒绝。这与“批量到达挤满队列”的机制一致，也说明只监控截止前完成率可能较晚看到拥堵。')
+
+b = page('探索贡献与协作记录')
 lead(b, '本项目完成的探索')
 p(b, '第一，依据研究者“优先减少超时客户端”的判断，以共同截止时间下的任务未完成率组织评价，使更少请求不能掩盖更多失败。第二，以均值匹配的分布控制随机幅度，减少平均等待不同导致的混杂。第三，以共享随机等待保持边际分布、改变客户端相关性，为去同步解释提供对照。第四，保存全部随机场景、逐请求与逐客户端日志，并通过解析边界和校验程序构成可追溯证据链。')
-p(b, '上述内容属于本项目的受控实验设计、工程实现与机制验证。指数退避、随机抖动以及分散请求的思想均已有先例，参数化表达本身也未经过穷尽性查新。因此，本文不宣称提出新算法；如果课程将“原创创新”限定为算法层面的新方法，本轮结果还需要进一步扩展。')
+p(b, '扩展实验的设计贡献是把共享人数、同组同步规模和启动时序拆为三个可控因素。固定共享人数再改变组规模，是基础实验没有覆盖的对照。该设计能检验哪些同步结构会削弱随机等待的收益，并量化拆组与错峰的效果。指数退避、随机抖动和分散请求是已有方法[2,3]。')
 lead(b, '影响外推与公平性的因素')
-p(b, '有限队列、同步首次请求、确定的50毫秒服务时间和固定失败响应，会强化请求成簇后的丢弃与空转；大队列、异步启动、可变服务时间、网络时延、响应丢失和拒绝请求资源开销均未覆盖。Google SRE也指出，拒绝请求仍会消耗资源，且固定每秒请求量不足以刻画所有服务的容量[4]。本实验的容量参数只是受控模型定义。')
-p(b, '低负载主指标为零形成地板效应，不能证明字面上的“每次固定1秒最优”。高负载两种独立抖动也均为零，不能回答“幅度越大是否越好”。后续可另行登记更紧的截止时间、更大队列和异步启动等条件；本报告没有通过事后改参数追求新的显著结果。')
+p(b, '两轮均使用短队列、确定的50毫秒服务时间和固定失败回执。扩展实验增加了1秒内错峰，其他网络延迟、可变服务时间、队列容量与截止时间仍待验证。Google SRE指出拒绝请求也可能消耗资源[4]。检出的共享比例受当前模拟配置、5个百分点的档距和样本量共同约束。')
+p(b, '低负载主指标为零形成地板效应，高负载的两种独立抖动也均为零。两轮实验中只有基础实验改变抖动幅度，因此仍缺少用来区分中等和大幅独立抖动的主指标证据。')
 lead(b, 'AI协作与研究者参与')
 table(b, ['参与方', '实际承担的内容'], [
-    ['研究者 周宇科', '选择随机重试主题；给出低负载直觉；明确优先减少超时客户端；确认开展工程实验与报告撰写。'],
-    ['AI助手', '检索官方资料；提出均值匹配和机制对照；编写模拟、测试、统计与绘图代码；通过工具在本地执行；依据输出起草报告。']], [112, 378])
-p(b, '当前数值来自AI协作执行的工程输出，不能表述为研究者已经独立复现。本人独立复现与最终审核记录可在后续提交时补充。公开仓库和完整对话Markdown入口见首页；对话保留最初选题、机械臂方向的讨论、放弃原方向及后续转题过程。本节分工说明不能替代逐条原始对话。')
+    ['研究者 周宇科', '选择随机重试主题，提出低负载判断并确定优先减少超时。选择部分共享方向，追问为何共享随机数、差距从哪一档出现，以及新旧实验结论有何不同。'],
+    ['AI助手', '核对课件和公开资料，提出均值匹配、分组、错峰与统计方案，编写并运行模拟、校验和绘图代码，依据结果协助整理报告。']], [112, 378])
+p(b, '实验数值来自AI协作执行的工程输出。首页可以打开两阶段逐条对话，分别涵盖基础选题与报告，以及扩展实验的设计、运行、结果比较和本次修订。')
 
 b = page('结论与复现资料')
 p(b, '对本次命题的回答是：在每轮期望等待匹配、100个客户端同步请求且服务队列较短的模型中，中等独立抖动相较确定性指数退避，显著降低了模拟任务的未按期完成率；低负载条件下没有观察到成功率收益，符合收益主要出现在竞争条件下的预期。共享随机等待未能消除同步到达，因而客户端之间是否独立随机，是本次结果中比“是否有随机数”更关键的设计因素。')
 p(b, '“客户端少时固定等待可能足够”仅在本配置得到有限支持；“随机范围越大越好”没有获得主指标上的证据。中等与大幅独立组均为零未完成，不能选出普遍最优幅度。本研究最可靠的结论是一个有条件的机制判断及其复现证据，而非适用于所有真实服务的性能保证。')
+p(b, '扩展结果表明，判断共享抖动的风险还需要看每个同步组的规模和启动时序。在本模型中，同步大组表现最差，拆组与错峰都显著降低了50%共享时的额外未完成率。部署中可检查不同客户端的随机流是否独立，并用短窗重试峰值和拒绝数观察是否仍有集中到达。')
 lead(b, '运行环境与数据定位')
-p(b, '正式实验于2026年11月11日运行，报告整理于2026年11月12日。工程记录的环境为Windows 11、Python 3.12.14；核心模拟与统计仅依赖标准库。15项检查已在Python 3.7.12与3.12.14下通过。正式数据共1400轮、83000个任务、577798次请求，verify_run.py已通过数据与源码指纹校验及原始日志指标重算。')
-p(b, '复现时进入experiments/retry_jitter目录，执行下列命令。使用新的输出目录，保留原始formal_v1。运行中simulated seconds为模型时间，manifest中约14.13秒为该次程序墙钟耗时，两者不能混淆。')
-b.append(('code', 'python -m unittest discover -s tests -v\npython run_experiment.py --output results/my_run\npython verify_run.py --run results/my_run'))
-p(b, '关键资料：EXPERIMENT_PLAN.md为事前协议；effective_config.json为实际配置；trials.csv与analysis.json为汇总与推断输入输出；attempts.csv.gz、clients.csv.gz、scenarios.jsonl.gz为原始证据；manifest.json保存源代码与数据SHA-256；figures_manifest.json保存图表输入输出指纹[5]。')
+p(b, '基础实验于2026年11月11日完成，扩展实验于11月19日完成。旧运行记录为1400轮、83000个任务和577798次请求，保留完整日志并已重算指标。新运行保留8800行试验结果、200个种子的场景记录及首个种子的逐请求日志。两轮模拟与统计均使用Python标准库。')
+p(b, '在实验目录执行下列命令复现，输出写入新目录。两次运行各自提供实验协议、配置、逐轮结果、统计汇总和文件指纹[5,6]。')
+b.append(('code', 'python -m unittest discover -s tests -v\npython run_experiment.py --output results/my_run\npython verify_run.py --run results/my_run\npython run_partial_sharing.py --output results/my_shared_run\npython plot_partial_sharing.py --run results/my_shared_run'))
 lead(b, '参考资料')
 b.append(('ref', '[1] 课程课件《第2讲 让重复迟到失败都变得无害》 幻灯片9—10。课程提供资料。'))
 b.append(('ref', '[2] Brooker M. Exponential Backoff And Jitter. AWS Architecture Blog, 2015-03-04. <link href="https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/" color="#1d4f76">官方原文</link>。检索日期2026-11-12。'))
 b.append(('ref', '[3] Amazon Builders’ Library. Timeouts retries and backoff with jitter, 2019-12-05. <link href="https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/" color="#1d4f76">官方原文</link>。检索日期2026-11-12。'))
 b.append(('ref', '[4] Forero Cuervo A. Handling Overload. Site Reliability Engineering, Chapter 21. <link href="https://sre.google/sre-book/handling-overload/" color="#1d4f76">官方在线章节</link>。检索日期2026-11-12。'))
 b.append(('ref', '[5] 本项目实验工程 results/formal_v1。配置与结果以随报告提供的来源清单和工程manifest为准。原始模拟数据生成日期2026-11-11。'))
+b.append(('ref', f'[6] 本项目扩展实验。<link href="{EXTENSION_RESULTS_URL}" color="#1d4f76">配置、结果、图表与日志</link>，2026-11-19。'))
 
 # Portable Markdown is generated from the same content blocks as the PDF.
 md = ['# 重试抖动幅度与客户端相关性对故障恢复的影响', '',
       '《海洋数据挖掘技术》课程研究报告', '',
-      '**作者：周宇科　学号：22634015　报告日期：2026年11月12日**', '',
+      '**作者：周宇科　学号：22634015　报告更新日期：2026年11月19日**', '',
       f'**公开 GitHub 仓库（Public）：[Yuke-Zhou/-]({REPOSITORY_URL})**', '',
-      f'**完整 AI 对话 Markdown：[逐条原始对话]({DIALOGUE_URL})**', '']
+      f'**完整 AI 对话 Markdown：[基础实验与原始报告]({DIALOGUE_URL}) · [部分共享实验与修订]({EXTENSION_DIALOGUE_URL})**', '']
 for number, (title, blocks) in enumerate(pages, 1):
     md += [f'## {number} {title}', '']
     for block in blocks:
         kind = block[0]
         if kind == 'cover':
             continue
-        if kind in ('p', 'lead', 'ref', 'caption'):
+        if kind in ('p', 'lead', 'ref', 'caption', 'keywords'):
             text = block[1]
-            import re
             text = re.sub(r'<link href="([^"]+)"[^>]*>(.*?)</link>', r'[\2](\1)', text)
-            md += [('**' + text + '**') if kind == 'lead' else text, '']
+            if kind == 'lead':
+                text = '### ' + text
+            elif kind == 'p':
+                # Full-width spaces survive GitHub's Markdown rendering.
+                text = '\u3000\u3000' + text
+            md += [text, '']
         elif kind == 'formula':
             text = block[1].replace('<sub>', '_{').replace('</sub>', '}').replace('<super>', '^{').replace('</super>', '}')
             md += ['$$', text, '$$', '']
@@ -261,18 +393,28 @@ pdfmetrics.registerFont(TTFont('ReportSong', r'C:\Windows\Fonts\simsun.ttc', sub
 pdfmetrics.registerFont(TTFont('ReportHei', r'C:\Windows\Fonts\simhei.ttf'))
 pdfmetrics.registerFont(TTFont('ReportMono', r'C:\Windows\Fonts\consola.ttf'))
 styles = {
-    'body': ParagraphStyle('body', fontName='ReportSong', fontSize=10.3, leading=17.0,
-                           alignment=TA_JUSTIFY, wordWrap='CJK', spaceAfter=7),
-    'lead': ParagraphStyle('lead', fontName='ReportHei', fontSize=11.3, leading=17.5, spaceBefore=7, spaceAfter=5),
-    'head': ParagraphStyle('head', fontName='ReportHei', fontSize=15, leading=22, spaceAfter=12),
+    'body': ParagraphStyle('body', fontName='ReportSong', fontSize=BODY_FONT_SIZE, leading=BODY_LEADING,
+                           firstLineIndent=BODY_FIRST_LINE_INDENT,
+                           alignment=TA_JUSTIFY, wordWrap='CJK', spaceBefore=0, spaceAfter=6,
+                           allowWidows=0, allowOrphans=0),
+    'keywords': ParagraphStyle('keywords', fontName='ReportSong', fontSize=BODY_FONT_SIZE,
+                               leading=BODY_LEADING, firstLineIndent=0, wordWrap='CJK', spaceAfter=6),
+    'lead': ParagraphStyle('lead', fontName='ReportHei', fontSize=11.3, leading=17.5,
+                           spaceBefore=8, spaceAfter=5, keepWithNext=True),
+    'head': ParagraphStyle('head', fontName='ReportHei', fontSize=15, leading=22,
+                           spaceAfter=12, keepWithNext=True),
     'title': ParagraphStyle('title', fontName='ReportHei', fontSize=20, leading=29, alignment=TA_CENTER, spaceAfter=9),
     'subtitle': ParagraphStyle('subtitle', fontName='ReportSong', fontSize=11, leading=17, alignment=TA_CENTER, spaceAfter=6),
     'meta': ParagraphStyle('meta', fontName='ReportSong', fontSize=10.3, leading=18, spaceAfter=8),
     'formula': ParagraphStyle('formula', fontName='ReportSong', fontSize=10.5, leading=18.5, alignment=TA_CENTER, spaceAfter=7),
     'cell': ParagraphStyle('cell', fontName='ReportSong', fontSize=9.4, leading=14.3, wordWrap='CJK'),
     'cell_head': ParagraphStyle('cell_head', fontName='ReportHei', fontSize=9.4, leading=14.5, wordWrap='CJK'),
-    'caption': ParagraphStyle('caption', fontName='ReportSong', fontSize=9.0, leading=14, spaceBefore=5, spaceAfter=9),
-    'ref': ParagraphStyle('ref', fontName='ReportSong', fontSize=9.3, leading=15.2, spaceAfter=6, wordWrap='CJK'),
+    'caption': ParagraphStyle('caption', fontName='ReportSong', fontSize=9.0, leading=14,
+                              alignment=TA_CENTER, spaceBefore=4, spaceAfter=6, keepWithNext=True),
+    'figure_caption': ParagraphStyle('figure_caption', fontName='ReportSong', fontSize=9.0,
+                                     leading=14, alignment=TA_CENTER, spaceBefore=5, spaceAfter=8),
+    'ref': ParagraphStyle('ref', fontName='ReportSong', fontSize=9.3, leading=15.2,
+                          leftIndent=20, firstLineIndent=-20, spaceAfter=6, wordWrap='CJK'),
     'code': ParagraphStyle('code', fontName='ReportMono', fontSize=9, leading=15, spaceAfter=9)
 }
 
@@ -285,12 +427,13 @@ for page_number, (title, blocks) in enumerate(pages, 1):
         if kind == 'cover':
             story += [Paragraph('重试抖动幅度与客户端相关性<br/>对故障恢复的影响', styles['title']),
                       Paragraph('海洋数据挖掘技术课程研究报告', styles['subtitle']),
-                      Paragraph('作者　周宇科　　学号　22634015　　日期　2026年11月12日', styles['meta']),
-                      Paragraph(f'公开 GitHub 仓库（Public）　<link href="{REPOSITORY_URL}" color="#1d4f76">{REPOSITORY_URL}</link><br/>完整 AI 对话 Markdown　<link href="{DIALOGUE_URL}" color="#1d4f76">逐条原始对话（点击打开）</link>', styles['meta'])]
-        elif kind in ('p', 'lead', 'ref', 'formula', 'caption'):
+                      Paragraph('作者　周宇科　　学号　22634015　　更新于2026年11月19日', styles['meta']),
+                      Paragraph(f'公开 GitHub 仓库（Public）　<link href="{REPOSITORY_URL}" color="#1d4f76">{REPOSITORY_URL}</link><br/>完整 AI 对话 Markdown　<link href="{DIALOGUE_URL}" color="#1d4f76">基础实验与原始报告</link>　·　<link href="{EXTENSION_DIALOGUE_URL}" color="#1d4f76">部分共享实验与修订</link>', styles['meta'])]
+        elif kind in ('p', 'lead', 'ref', 'formula', 'caption', 'keywords'):
             story.append(Paragraph(block[1], styles[kind if kind != 'p' else 'body']))
         elif kind == 'table':
             headers, rows, widths = block[1:]
+            widths = [width * CONTENT_WIDTH / sum(widths) for width in widths]
             cells = [[Paragraph(html.escape(x), styles['cell_head']) for x in headers]]
             cells += [[Paragraph(html.escape(str(x)), styles['cell']) for x in row] for row in rows]
             t = Table(cells, colWidths=widths, repeatRows=1, hAlign='CENTER')
@@ -301,12 +444,13 @@ for page_number, (title, blocks) in enumerate(pages, 1):
                 ('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),
                 ('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),6),
                 ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.HexColor('#fafbfc')])]))
-            story += [t, Spacer(1,8)]
+            story += [t, Spacer(1,6)]
         elif kind == 'figure':
             path = ASSETS / block[1]
             iw, ih = ImageReader(str(path)).getSize()
-            image = Image(str(path), width=block[3], height=block[3]*ih/iw)
-            story.append(KeepTogether([image, Paragraph(block[2], styles['caption'])]))
+            image_width = min(block[3], CONTENT_WIDTH)
+            image = Image(str(path), width=image_width, height=image_width*ih/iw)
+            story.append(KeepTogether([image, Paragraph(block[2], styles['figure_caption'])]))
         elif kind == 'code':
             story.append(Paragraph('<br/>'.join(html.escape(line) for line in block[1].splitlines()), styles['code']))
 
@@ -321,17 +465,34 @@ def footer(canvas, document):
 
 
 pdf_path = HERE / '课程研究报告_周宇科_22634015.pdf'
-doc = SimpleDocTemplate(str(pdf_path), pagesize=(595.276, 841.89), rightMargin=52.6, leftMargin=52.6,
+pdf_build_path = HERE / '._report_build.pdf'
+doc = SimpleDocTemplate(str(pdf_build_path), pagesize=(595.276, 841.89), rightMargin=52.6, leftMargin=52.6,
                         topMargin=43, bottomMargin=42, title='重试抖动幅度与客户端相关性对故障恢复的影响',
                         author='周宇科', subject='海洋数据挖掘技术课程研究报告')
 doc.build(story, onFirstPage=footer, onLaterPages=footer)
+try:
+    pdf_build_path.replace(pdf_path)
+except PermissionError:
+    pdf_path = HERE / f'课程研究报告_周宇科_22634015_{REPORT_DATE}.pdf'
+    pdf_build_path.replace(pdf_path)
 sources = {
-    'author': '周宇科', 'student_id': '22634015', 'report_date': '2026-11-12',
+    'author': '周宇科', 'student_id': '22634015', 'report_date': REPORT_DATE,
     'github_url': REPOSITORY_URL, 'dialogue_url': DIALOGUE_URL,
+    'extension_dialogue_url': EXTENSION_DIALOGUE_URL,
+    'format': {'paper': 'A4', 'body_font': 'SimSun', 'body_font_size_pt': BODY_FONT_SIZE,
+               'body_leading_pt': BODY_LEADING, 'first_line_indent_characters': 2,
+               'first_line_indent_pt': BODY_FIRST_LINE_INDENT, 'body_space_after_pt': 6,
+               'table_captions': 'above', 'figure_captions': 'below',
+               'references': 'hanging indent', 'markdown_indent': 'two full-width spaces'},
     'formal_run': 'experiments/retry_jitter/results/formal_v1',
     'inputs_sha256': {name: digest(RUN/name) for name in ['analysis.json','manifest.json','effective_config.json','trials.csv']},
     'analytical_check': {'no_jitter_success_counts': dict(fixed_counts), 'interpretation': 'post-hoc model consistency explanation'},
     'raw_counts': {'trials':len(trials),'clients':client_count,'attempts':attempt_count},
+    'extension_run': 'experiments/retry_jitter/results/partial_sharing_v1',
+    'extension_inputs_sha256': {name: digest(EXTENSION/name) for name in
+                                ['analysis.json', 'manifest.json', 'effective_config.json', 'trials.csv',
+                                 'figures/sharing_thresholds.png', 'figures/sharing_mechanisms.png']},
+    'extension_counts': {'trials': extension['trial_count'], 'seeds': extension['seed_count']},
     'references_access_date': '2026-11-12',
     'limitations': ['synthetic finite queue','zero observed failures is not zero population risk','no algorithm novelty established'],
     'outputs_sha256': {p.name:digest(p) for p in [pdf_path,HERE/'课程研究报告_周宇科_22634015.md']}
